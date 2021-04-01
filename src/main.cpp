@@ -251,6 +251,7 @@ int main(int argc, char** argv) {
                 {"pragma", 'P', "OPTIONS", "", false, "Set pragma options."},
                 {"provenance", 't', "[ none | explain | explore ]", "", false,
                         "Enable provenance instrumentation and interaction."},
+		{"semProv", 'T', "[ none | use ]", "", false, "Enable semiring-based provenance computations."},
                 {"verbose", 'v', "", "", false, "Verbose output."},
                 {"version", '\3', "", "", false, "Version."},
                 {"show", '\4',
@@ -388,6 +389,9 @@ int main(int argc, char** argv) {
     if (Global::config().has("swig") && !Global::config().has("generate")) {
         Global::config().set("generate", simpleName(Global::config().get("")));
     }
+
+    /// souffle-provenance temporary
+    Global::config().print(std::cout);
 
     // ------ start souffle -------------
 
