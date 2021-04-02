@@ -60,6 +60,8 @@
 #include "ast2ram/UnitTranslator.h"
 #include "ast2ram/provenance/TranslationStrategy.h"
 #include "ast2ram/provenance/UnitTranslator.h"
+#include "ast2ram/semprov/TranslationStrategy.h"
+#include "ast2ram/semprov/UnitTranslator.h"
 #include "ast2ram/seminaive/TranslationStrategy.h"
 #include "ast2ram/seminaive/UnitTranslator.h"
 #include "ast2ram/utility/TranslatorContext.h"
@@ -390,8 +392,14 @@ int main(int argc, char** argv) {
         Global::config().set("generate", simpleName(Global::config().get("")));
     }
 
-    /// souffle-provenance temporary
-    Global::config().print(std::cout);
+    /// semProv temporary
+    //Global::config().print(std::cout);
+
+    /// semProv sanity checker - to be extended
+    if(Global::config().has("provenance") && Global::config().has("semProv")) {
+      std::cerr << "FAILURE: Cannot use provenance and semProv concurrently." << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
     // ------ start souffle -------------
 
@@ -449,6 +457,12 @@ int main(int argc, char** argv) {
 
     // ------- check for parse errors -------------
     astTranslationUnit->getErrorReport().exitIfErrors();
+    
+    /// semProv temporary
+    Global::config().print(std::cout);
+    //std::cout << "---- start semProv temporary: std::cout << astTranslationUnit->getProgram() << std::endl;" << std::endl;
+    //std::cout << astTranslationUnit->getProgram() << std::endl;
+    //std::cout << "---- end SemProv temporary" << std::endl;
 
     // ------- rewriting / optimizations -------------
 
@@ -590,13 +604,20 @@ int main(int argc, char** argv) {
         }
     }
 
+    /// semProv temporary
+    //std::cout << "---- start semProv temporary (after ram transformations): std::cout << astTranslationUnit->getProgram() << std::endl;" << std::endl;
+    //std::cout << astTranslationUnit->getProgram() << std::endl;
+    //std::cout << "---- end SemProv temporary" << std::endl;
+
     // ------- execution -------------
     /* translate AST to RAM */
     debugReport.startSection();
     auto translationStrategy =
             Global::config().has("provenance")
                     ? mk<ast2ram::TranslationStrategy, ast2ram::provenance::TranslationStrategy>()
-                    : mk<ast2ram::TranslationStrategy, ast2ram::seminaive::TranslationStrategy>();
+                    : ( Global::config().has("semProv") 
+				    ? mk<ast2ram::TranslationStrategy, ast2ram::semprov::TranslationStrategy>() 
+				    : mk<ast2ram::TranslationStrategy, ast2ram::seminaive::TranslationStrategy>());
     auto unitTranslator = Own<ast2ram::UnitTranslator>(translationStrategy->createUnitTranslator());
     auto ramTranslationUnit = unitTranslator->translateUnit(*astTranslationUnit);
     debugReport.endSection("ast-to-ram", "Translate AST to RAM");
