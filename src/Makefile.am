@@ -245,6 +245,14 @@ souffle_sources = \
         ast2ram/provenance/TranslationStrategy.h           \
         ast2ram/provenance/UnitTranslator.cpp              \
         ast2ram/provenance/UnitTranslator.h                \
+	ast2ram/semprov/ClauseTranslator.cpp		   \
+	ast2ram/semprov/ClauseTranslator.h		   \
+	ast2ram/semprov/ConstraintTranslator.cpp           \
+	ast2ram/semprov/ConstraintTranslator.h             \
+	ast2ram/semprov/TranslationStrategy.cpp            \
+	ast2ram/semprov/TranslationStrategy.h              \
+	ast2ram/semprov/UnitTranslator.cpp                 \
+	ast2ram/semprov/UnitTranslator.h                   \
         ast2ram/seminaive/ClauseTranslator.cpp             \
         ast2ram/seminaive/ClauseTranslator.h               \
         ast2ram/seminaive/ConstraintTranslator.cpp         \
