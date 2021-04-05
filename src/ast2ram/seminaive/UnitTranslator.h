@@ -64,8 +64,8 @@ protected:
     Own<ram::Statement> generateRecursiveStratum(const std::set<const ast::Relation*>& scc) const;
 
     /** IO translation */
-    Own<ram::Statement> generateStoreRelation(const ast::Relation* relation) const;
-    Own<ram::Statement> generateLoadRelation(const ast::Relation* relation) const;
+    virtual Own<ram::Statement> generateStoreRelation(const ast::Relation* relation) const;
+    virtual Own<ram::Statement> generateLoadRelation(const ast::Relation* relation) const;
 
     /** Low-level stratum translation */
     Own<ram::Statement> generateStratum(std::size_t scc) const;

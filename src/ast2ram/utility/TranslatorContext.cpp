@@ -36,6 +36,7 @@
 #include "ast2ram/ValueTranslator.h"
 #include "ast2ram/provenance/TranslationStrategy.h"
 #include "ast2ram/seminaive/TranslationStrategy.h"
+#include "ast2ram/semprov/TranslationStrategy.h"
 #include "ram/Condition.h"
 #include "ram/Expression.h"
 #include "ram/Statement.h"
@@ -81,6 +82,9 @@ TranslatorContext::TranslatorContext(const ast::TranslationUnit& tu) {
     // Set up the correct strategy
     if (Global::config().has("provenance")) {
         translationStrategy = mk<provenance::TranslationStrategy>();
+    // This currently doesn't work for now, this has to be fixed
+    //} else if (Global::config().has("semProv")) {
+    //    translationStrategy = mk<semprov::TranslationStrategy>();
     } else {
         translationStrategy = mk<seminaive::TranslationStrategy>();
     }

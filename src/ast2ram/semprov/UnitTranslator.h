@@ -46,6 +46,10 @@ protected:
     Own<ram::Statement> generateMergeRelations(const ast::Relation* rel, const std::string& destRelation,
             const std::string& srcRelation) const override;
 
+    /** IO translation */
+    Own<ram::Statement> generateLoadRelation(const ast::Relation* relation) const override;
+    Own<ram::Statement> generateStoreRelation(const ast::Relation* relation) const override;
+
 private:
     /** Translate RAM code for subroutine to get subproofs */
     //Own<ram::Statement> makeSubproofSubroutine(const ast::Clause& clause);

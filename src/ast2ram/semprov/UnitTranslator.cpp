@@ -41,6 +41,22 @@
 
 namespace souffle::ast2ram::semprov {
 
+/* semProv:  	we now need to override generateLoadRelation and generateStoreRelation 
+ * 		as they both now have to read/write the new @semprov column.
+ *	We might further need to modify this if @semprov turns out to be preferably an 
+ *	auxiliary attribute.
+ */
+Own<ram::Statement> UnitTranslator::generateLoadRelation(const ast::Relation* relation) const {
+	// dummy return for now
+	return seminaive::UnitTranslator::generateLoadRelation(relation);
+}
+
+Own<ram::Statement> UnitTranslator::generateStoreRelation(const ast::Relation* relation) const {
+	// dummy return for now
+	return seminaive::UnitTranslator::generateStoreRelation(relation);
+}
+
+// this could be now NOT tagged as OVERRIDE to avoid putting this
 Own<ram::Sequence> UnitTranslator::generateProgram(const ast::TranslationUnit& translationUnit) {
     // Do the regular translation
     auto ramProgram = seminaive::UnitTranslator::generateProgram(translationUnit);
@@ -70,15 +86,12 @@ Own<ram::Relation> UnitTranslator::createRamRelation(
         attributeTypeQualifiers.push_back(context->getAttributeTypeQualifier(attribute->getTypeName()));
     }
 
-    // Add in provenance information
-    attributeNames.push_back("@rule_number");
-    attributeTypeQualifiers.push_back("i:number");
-
-    attributeNames.push_back("@level_number");
-    attributeTypeQualifiers.push_back("i:number");
+    // Add in semiring-based provenance information - for now, the attribute is NOT auxiliary
+    attributeNames.push_back("@semprov");
+    attributeTypeQualifiers.push_back("u:number");
 
     return mk<ram::Relation>(
-            ramRelationName, arity + 2, 2, attributeNames, attributeTypeQualifiers, representation);
+            ramRelationName, arity + 1, 0, attributeNames, attributeTypeQualifiers, representation);
 }
 
 /*
@@ -91,10 +104,12 @@ std::string UnitTranslator::getInfoRelationName(const ast::Clause* clause) const
 }
 */
 
+// this could be now NOT tagged as OVERRIDE to avoid putting this
 VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::size_t>& sccOrdering) const {
     // Regular relations
     auto ramRelations = seminaive::UnitTranslator::createRamRelations(sccOrdering);
 
+    /*
     // Info relations
     for (const auto* clause : context->getProgram()->getClauses()) {
         if (isFact(*clause)) {
@@ -127,22 +142,26 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
         attributeTypeQualifiers.push_back("s:symbol");
 
         // Create the info relation
-        //ramRelations.push_back(mk<ram::Relation>(getInfoRelationName(clause), attributeNames.size(), 0,
-        //        attributeNames, attributeTypeQualifiers, RelationRepresentation::INFO));
+        ramRelations.push_back(mk<ram::Relation>(getInfoRelationName(clause), attributeNames.size(), 0,
+                attributeNames, attributeTypeQualifiers, RelationRepresentation::INFO));
     }
+    */
 
     return ramRelations;
 }
 
+// this could be now NOT tagged as override to avoid putting this
 void UnitTranslator::addAuxiliaryArity(
         const ast::Relation* /* relation */, std::map<std::string, std::string>& directives) const {
-    directives.insert(std::make_pair("auxArity", "2"));
+    // we choosed NOT to tag @semprov as an auxiliary attribute
+    directives.insert(std::make_pair("auxArity", "O"));
 }
 
+// this could be now NOT tagged as override to avoid putting this
 Own<ram::Statement> UnitTranslator::generateClearExpiredRelations(
-        const std::set<const ast::Relation*>& /* expiredRelations */) const {
-    // Relations should be preserved if provenance is enabled
-    return mk<ram::Sequence>();
+        const std::set<const ast::Relation*>&  expiredRelations ) const {
+    // We don't really need to preserve relations in semiring-based provenance
+    return seminaive::UnitTranslator::generateClearExpiredRelations(expiredRelations);
 }
 
 /*
