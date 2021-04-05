@@ -86,8 +86,14 @@ private:
                 attributesParams.push_back(attribute->getName());
             }
 
+	    // If semProv is enabled we want to add now our new attribute (because the attribute is not aux)
+	    if (Global::config().has("semProv")) {
+		    attributesParams.push_back("@semprov");
+	    }
+
             // Casting due to json11.h type requirements.
             long long arity{static_cast<long long>(rel->getArity())};
+            if (Global::config().has("semProv")) arity++;
 
             json11::Json relJson = json11::Json::object{{"arity", arity},
                     {"params", json11::Json::array(attributesParams.begin(), attributesParams.end())}};
@@ -121,6 +127,9 @@ private:
             for (const auto* attribute : rel->getAttributes()) {
                 attributeNames.push_back(attribute->getName());
             }
+	    if (Global::config().has("semProv")) {
+		attributeNames.push_back("@semprov");
+	    }
             io->addParameter("attributeNames", toString(join(attributeNames, delimiter)));
             changed = true;
         }
@@ -143,9 +152,13 @@ private:
                 auto type = getTypeQualifier(typeEnv->getType(typeName));
                 attributesTypes.push_back(type);
             }
+	    if (Global::config().has("semProv")) {
+		    attributesTypes.push_back("u:number");
+	    }
 
             // Casting due to json11.h type requirements.
             long long arity{static_cast<long long>(rel->getArity())};
+            if (Global::config().has("semProv")) arity++;
 
             json11::Json relJson = json11::Json::object{{"arity", arity},
                     {"types", json11::Json::array(attributesTypes.begin(), attributesTypes.end())}};

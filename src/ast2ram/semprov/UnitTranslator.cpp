@@ -47,12 +47,14 @@ namespace souffle::ast2ram::semprov {
  *	auxiliary attribute.
  */
 Own<ram::Statement> UnitTranslator::generateLoadRelation(const ast::Relation* relation) const {
-	// dummy return for now
+	// dummy return for now as we have implemented modification of the directives
+	// directly in the IOAttributes transformation pass
 	return seminaive::UnitTranslator::generateLoadRelation(relation);
 }
 
 Own<ram::Statement> UnitTranslator::generateStoreRelation(const ast::Relation* relation) const {
-	// dummy return for now
+	// dummy return for now as we have implemented modification of the directives
+	// directly in the IOAttributes transofrmation pass
 	return seminaive::UnitTranslator::generateStoreRelation(relation);
 }
 
