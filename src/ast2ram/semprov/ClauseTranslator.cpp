@@ -27,6 +27,8 @@
 #include "ram/SignedConstant.h"
 #include "ram/UndefValue.h"
 #include "souffle/utility/StringUtil.h"
+#include "ram/TupleElement.h"
+#include "ast/Relation.h"
 
 namespace souffle::ast2ram::semprov {
 
@@ -144,9 +146,15 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     auto headRelationName = getClauseAtomName(clause, head);
 
     VecOwn<ram::Expression> values;
+    unsigned i = 0;
     for (const auto* arg : head->getArguments()) {
         values.push_back(context.translateValue(*valueIndex, arg));
+	i++;
     }
+    
+    // For now, we look at the number of arguments as it will be equal to 
+    // the arity of the relation 
+    values.push_back(mk<ram::TupleElement>(0,i));
 
     // add rule number + level number
     //if (isFact(clause)) {
@@ -154,8 +162,8 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
         //values.push_back(mk<ram::SignedConstant>(0));
         //values.push_back(mk<ram::SignedConstant>(0));
     //} else {
-        values.push_back(mk<ram::SignedConstant>(context.getClauseNum(&clause)));
-        values.push_back(getLevelNumber(clause));
+        //values.push_back(mk<ram::SignedConstant>(context.getClauseNum(&clause)));
+        //values.push_back(getLevelNumber(clause));
     //}
 
     // Relations with functional dependency constraints
