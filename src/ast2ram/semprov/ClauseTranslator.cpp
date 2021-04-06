@@ -82,20 +82,25 @@ void ClauseTranslator::indexAtoms(const ast::Clause& clause) {
         int scanLevel = addOperatorLevel(atom);
         indexNodeArguments(scanLevel, atom->getArguments());
 
-        // Add rule num variable
+        // Add rule num variable - We want to delete this
         std::string ruleNumVarName = "@rule_num_" + std::to_string(atomIdx);
-        valueIndex->addVarReference(ruleNumVarName, scanLevel, atom->getArity());
+        valueIndex->addVarReference(ruleNumVarName, scanLevel, atom->getArity() + 2);
 
-        // Add level num variable
+        // Add level num variable - We want to delete this
         std::string levelNumVarName = "@level_num_" + std::to_string(atomIdx);
         valueIndex->addVarReference(levelNumVarName, scanLevel, atom->getArity() + 1);
+
+	// Add semprov variable
+	std::string semprovVarName = "@semprov_" + std::to_string(atomIdx);
+	valueIndex->addVarReference(semprovVarName, scanLevel, atom->getArity());
 
         atomIdx++;
     }
 }
 
+// We want to rename this
 Own<ram::Expression> ClauseTranslator::getLevelNumber(const ast::Clause& clause) const {
-    auto getLevelVariable = [&](std::size_t atomIdx) { return "@level_num_" + std::to_string(atomIdx); };
+    auto getLevelVariable = [&](std::size_t atomIdx) { return "@semprov_" + std::to_string(atomIdx); };
 
     const auto& bodyAtoms = getAtomOrdering(clause);
     if (bodyAtoms.empty()) return mk<ram::SignedConstant>(0);
@@ -106,14 +111,16 @@ Own<ram::Expression> ClauseTranslator::getLevelNumber(const ast::Clause& clause)
         values.push_back(context.translateValue(*valueIndex, levelVar.get()));
     }
     assert(!values.empty() && "unexpected empty value set");
+    
+    // maxLevel is not the appropriate name now 
+    auto semprovValue = values.size() == 1 ? std::move(values.at(0))
+                                       : mk<ram::IntrinsicOperator>(FunctorOp::ADD, std::move(values));
 
-    auto maxLevel = values.size() == 1 ? std::move(values.at(0))
-                                       : mk<ram::IntrinsicOperator>(FunctorOp::MAX, std::move(values));
-
-    VecOwn<ram::Expression> addArgs;
-    addArgs.push_back(std::move(maxLevel));
-    addArgs.push_back(mk<ram::SignedConstant>(1));
-    return mk<ram::IntrinsicOperator>(FunctorOp::ADD, std::move(addArgs));
+    return semprovValue;
+    //VecOwn<ram::Expression> addArgs;
+    //addArgs.push_back(std::move(maxLevel));
+    //addArgs.push_back(mk<ram::SignedConstant>(1));
+    //return mk<ram::IntrinsicOperator>(FunctorOp::ADD, std::move(addArgs));
 }
 
 Own<ram::Operation> ClauseTranslator::addAtomScan(
@@ -156,7 +163,7 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     // the arity of the relation.
     // This should be fixed because we assume the clause has only one atom in the body 
     // and the arities of both the body and the head relations are the same. 
-    values.push_back(mk<ram::TupleElement>(0,i));
+    //values.push_back(mk<ram::TupleElement>(0,i));
 
     // add rule number + level number
     //if (isFact(clause)) {
@@ -165,7 +172,7 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
         //values.push_back(mk<ram::SignedConstant>(0));
     //} else {
         //values.push_back(mk<ram::SignedConstant>(context.getClauseNum(&clause)));
-        //values.push_back(getLevelNumber(clause));
+        values.push_back(getLevelNumber(clause));
     //}
 
     // Relations with functional dependency constraints
