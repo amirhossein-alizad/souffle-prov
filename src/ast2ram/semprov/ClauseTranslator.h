@@ -38,7 +38,7 @@ protected:
             int curLevel) const override;
 
 private:
-    Own<ram::Expression> getLevelNumber(const ast::Clause& clause) const;
+    Own<ram::Expression> getSemprovValue(const ast::Clause& clause) const;
 };
 
 }  // namespace souffle::ast2ram::provenance

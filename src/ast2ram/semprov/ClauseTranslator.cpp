@@ -68,7 +68,8 @@ Own<ram::Operation> ClauseTranslator::addNegatedAtom(
     values.push_back(mk<ram::UndefValue>());
 
     // height
-    values.push_back(getLevelNumber(clause));
+    // deleted because getLevelNumber has changed name and semantic
+    //values.push_back(getLevelNumber(clause));
 
     return mk<ram::Filter>(mk<ram::Negation>(mk<ram::ProvenanceExistenceCheck>(
                                    getConcreteRelationName(atom->getQualifiedName()), std::move(values))),
@@ -98,8 +99,7 @@ void ClauseTranslator::indexAtoms(const ast::Clause& clause) {
     }
 }
 
-// We want to rename this
-Own<ram::Expression> ClauseTranslator::getLevelNumber(const ast::Clause& clause) const {
+Own<ram::Expression> ClauseTranslator::getSemprovValue(const ast::Clause& clause) const {
     auto getLevelVariable = [&](std::size_t atomIdx) { return "@semprov_" + std::to_string(atomIdx); };
 
     const auto& bodyAtoms = getAtomOrdering(clause);
@@ -172,7 +172,7 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
         //values.push_back(mk<ram::SignedConstant>(0));
     //} else {
         //values.push_back(mk<ram::SignedConstant>(context.getClauseNum(&clause)));
-        values.push_back(getLevelNumber(clause));
+        values.push_back(getSemprovValue(clause));
     //}
 
     // Relations with functional dependency constraints
