@@ -149,13 +149,14 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     }
 
     // add rule number + level number
-    if (isFact(clause)) {
-        values.push_back(mk<ram::SignedConstant>(0));
-        values.push_back(mk<ram::SignedConstant>(0));
-    } else {
+    //if (isFact(clause)) {
+    assert(!isFact(clause) && "Facts using semiring-based provenance should be avoided in the input program.");
+        //values.push_back(mk<ram::SignedConstant>(0));
+        //values.push_back(mk<ram::SignedConstant>(0));
+    //} else {
         values.push_back(mk<ram::SignedConstant>(context.getClauseNum(&clause)));
         values.push_back(getLevelNumber(clause));
-    }
+    //}
 
     // Relations with functional dependency constraints
     if (auto guardedConditions = getFunctionalDependencies(clause)) {

@@ -83,8 +83,8 @@ TranslatorContext::TranslatorContext(const ast::TranslationUnit& tu) {
     if (Global::config().has("provenance")) {
         translationStrategy = mk<provenance::TranslationStrategy>();
     // This currently doesn't work for now, this has to be fixed
-    //} else if (Global::config().has("semProv")) {
-    //    translationStrategy = mk<semprov::TranslationStrategy>();
+    } else if (Global::config().has("semProv")) {
+        translationStrategy = mk<semprov::TranslationStrategy>();
     } else {
         translationStrategy = mk<seminaive::TranslationStrategy>();
     }

@@ -640,8 +640,9 @@ int main(int argc, char** argv) {
                         []() -> bool { return std::stoi(Global::config().get("jobs")) != 1; },
                         mk<ParallelTransformer>()),
                 mk<ReportIndexTransformer>());
-
-        ramTransform->apply(*ramTranslationUnit);
+	// Using the SemProv TranslationSTrategy raise many assert errors
+	// This should be eventually fixed
+        //ramTransform->apply(*ramTranslationUnit);
     }
 
     if (ramTranslationUnit->getErrorReport().getNumIssues() != 0) {
