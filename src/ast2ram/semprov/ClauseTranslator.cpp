@@ -153,7 +153,9 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     }
     
     // For now, we look at the number of arguments as it will be equal to 
-    // the arity of the relation 
+    // the arity of the relation.
+    // This should be fixed because we assume the clause has only one atom in the body 
+    // and the arities of both the body and the head relations are the same. 
     values.push_back(mk<ram::TupleElement>(0,i));
 
     // add rule number + level number

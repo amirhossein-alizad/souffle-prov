@@ -193,8 +193,8 @@ Own<ram::Statement> UnitTranslator::generateMergeRelations(
         const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const {
     VecOwn<ram::Expression> values;
 
-    // Predicate - project all values
-    for (std::size_t i = 0; i < rel->getArity() + 2; i++) {
+    // Predicate - project all values - Arity +1 and not +2 because semProv and not provenance
+    for (std::size_t i = 0; i < rel->getArity() + 1; i++) {
         values.push_back(mk<ram::TupleElement>(0, i));
     }
 
