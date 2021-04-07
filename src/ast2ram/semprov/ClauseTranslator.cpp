@@ -64,14 +64,13 @@ Own<ram::Operation> ClauseTranslator::addNegatedAtom(
         values.push_back(context.translateValue(*valueIndex, arg));
     }
 
-    // undefined value for rule number
+    // Does this verify whether it exists a value for which the tuple is present?
     values.push_back(mk<ram::UndefValue>());
 
-    // height
     // deleted because getLevelNumber has changed name and semantic
-    //values.push_back(getLevelNumber(clause));
+    //values.push_back(getSemprovValue(clause));
 
-    return mk<ram::Filter>(mk<ram::Negation>(mk<ram::ProvenanceExistenceCheck>(
+    return mk<ram::Filter>(mk<ram::Negation>(mk<ram::ExistenceCheck>(
                                    getConcreteRelationName(atom->getQualifiedName()), std::move(values))),
             std::move(op));
 }
@@ -84,12 +83,12 @@ void ClauseTranslator::indexAtoms(const ast::Clause& clause) {
         indexNodeArguments(scanLevel, atom->getArguments());
 
         // Add rule num variable - We want to delete this
-        std::string ruleNumVarName = "@rule_num_" + std::to_string(atomIdx);
-        valueIndex->addVarReference(ruleNumVarName, scanLevel, atom->getArity() + 2);
+        //std::string ruleNumVarName = "@rule_num_" + std::to_string(atomIdx);
+        //valueIndex->addVarReference(ruleNumVarName, scanLevel, atom->getArity() + 2);
 
         // Add level num variable - We want to delete this
-        std::string levelNumVarName = "@level_num_" + std::to_string(atomIdx);
-        valueIndex->addVarReference(levelNumVarName, scanLevel, atom->getArity() + 1);
+        //std::string levelNumVarName = "@level_num_" + std::to_string(atomIdx);
+        //valueIndex->addVarReference(levelNumVarName, scanLevel, atom->getArity() + 1);
 
 	// Add semprov variable
 	std::string semprovVarName = "@semprov_" + std::to_string(atomIdx);
