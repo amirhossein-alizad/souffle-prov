@@ -156,7 +156,7 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
 void UnitTranslator::addAuxiliaryArity(
         const ast::Relation* /* relation */, std::map<std::string, std::string>& directives) const {
     // we choosed NOT to tag @semprov as an auxiliary attribute
-    directives.insert(std::make_pair("auxArity", "O"));
+    directives.insert(std::make_pair("auxArity", "0"));
 }
 
 // this could be now NOT tagged as override to avoid putting this
