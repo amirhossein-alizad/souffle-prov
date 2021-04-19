@@ -120,16 +120,16 @@ Own<ram::Expression> ClauseTranslator::getSemprovValue(const ast::Clause& clause
     auto semprovValue = values.size() == 1 ? std::move(values.at(0))
                                        : mk<ram::IntrinsicOperator>(FunctorOp::ADD, std::move(values));
 
-    //return semprovValue;
+    return semprovValue;
     
-    VecOwn<ram::Expression> valuesOuter;
+    /*VecOwn<ram::Expression> valuesOuter;
     valuesOuter.push_back(std::move(semprovValue));
 
     valuesOuter.push_back(mk<ram::TupleElement>(operators.size(), 0));
 
     auto semprovValueWithAgg = mk<ram::IntrinsicOperator>(FunctorOp::MIN, std::move(valuesOuter));
 
-    return semprovValueWithAgg;
+    return semprovValueWithAgg;*/
 
     //VecOwn<ram::Expression> addArgs;
     //addArgs.push_back(std::move(maxLevel));
@@ -206,10 +206,11 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
 
     //return mk<ram::Choice>(headRelationName, operators.size(), mk<ram::True>(), mk<ram::Project>(headRelationName, std::move(values)));
     auto projection = mk<ram::Project>(headRelationName, std::move(values));
-    auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN, headRelationName,
+    return projection;
+    /*auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN, headRelationName,
 		    mk<ram::TupleElement>(operators.size(), i),
 		    std::move(aggCond), operators.size());
-    return agg;
+    return agg; */
     
 }
 
