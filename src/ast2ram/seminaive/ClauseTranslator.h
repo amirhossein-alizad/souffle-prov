@@ -128,7 +128,7 @@ protected:
     int addGeneratorLevel(const ast::Argument* arg);
     int addOperatorLevel(const ast::Node* node);
 
-private:
+//private: no longer private because needed in createProjection in semprov to add a new tuple for CHOICE
     std::vector<const ast::Argument*> generators;
     std::vector<const ast::Node*> operators;
 };

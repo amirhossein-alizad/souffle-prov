@@ -29,6 +29,8 @@
 #include "souffle/utility/StringUtil.h"
 #include "ram/TupleElement.h"
 #include "ast/Relation.h"
+#include "ram/Choice.h"
+#include "ram/True.h"
 
 namespace souffle::ast2ram::semprov {
 
@@ -181,6 +183,8 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
 
     // Everything else
     return mk<ram::Project>(headRelationName, std::move(values));
+
+    //return mk<ram::Choice>(headRelationName, operators.size(), mk<ram::True>(), mk<ram::Project>(headRelationName, std::move(values)));
 }
 
 }  // namespace souffle::ast2ram::provenance
