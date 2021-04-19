@@ -32,6 +32,9 @@
 #include "ram/Choice.h"
 #include "ram/True.h"
 
+#include "ram/Aggregate.h"
+#include "ram/Constraint.h"
+
 namespace souffle::ast2ram::semprov {
 
 Own<ram::Operation> ClauseTranslator::addNegatedDeltaAtom(
@@ -117,7 +120,17 @@ Own<ram::Expression> ClauseTranslator::getSemprovValue(const ast::Clause& clause
     auto semprovValue = values.size() == 1 ? std::move(values.at(0))
                                        : mk<ram::IntrinsicOperator>(FunctorOp::ADD, std::move(values));
 
-    return semprovValue;
+    //return semprovValue;
+    
+    VecOwn<ram::Expression> valuesOuter;
+    valuesOuter.push_back(std::move(semprovValue));
+
+    valuesOuter.push_back(mk<ram::TupleElement>(operators.size(), 0));
+
+    auto semprovValueWithAgg = mk<ram::IntrinsicOperator>(FunctorOp::MIN, std::move(valuesOuter));
+
+    return semprovValueWithAgg;
+
     //VecOwn<ram::Expression> addArgs;
     //addArgs.push_back(std::move(maxLevel));
     //addArgs.push_back(mk<ram::SignedConstant>(1));
@@ -153,10 +166,17 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     const auto head = clause.getHead();
     auto headRelationName = getClauseAtomName(clause, head);
 
+    Own<ram::Condition> aggCond;
+
     VecOwn<ram::Expression> values;
     unsigned i = 0;
     for (const auto* arg : head->getArguments()) {
         values.push_back(context.translateValue(*valueIndex, arg));
+	
+	auto condition = mk<ram::Constraint>(BinaryConstraintOp::EQ,
+			mk<ram::TupleElement>(operators.size(),i),
+			context.translateValue(*valueIndex, arg));
+	aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
 	i++;
     }
     
@@ -182,9 +202,15 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     }
 
     // Everything else
-    return mk<ram::Project>(headRelationName, std::move(values));
+    //return mk<ram::Project>(headRelationName, std::move(values));
 
     //return mk<ram::Choice>(headRelationName, operators.size(), mk<ram::True>(), mk<ram::Project>(headRelationName, std::move(values)));
+    auto projection = mk<ram::Project>(headRelationName, std::move(values));
+    auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN, headRelationName,
+		    mk<ram::TupleElement>(operators.size(), i),
+		    std::move(aggCond), operators.size());
+    return agg;
+    
 }
 
 }  // namespace souffle::ast2ram::provenance

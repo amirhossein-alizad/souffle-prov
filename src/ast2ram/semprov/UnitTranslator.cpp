@@ -38,6 +38,11 @@
 #include "souffle/SymbolTable.h"
 #include "souffle/utility/StringUtil.h"
 #include <sstream>
+#include "ram/Aggregate.h"
+#include "ram/True.h"
+#include "ram/EmptinessCheck.h"
+#include "ram/Negation.h"
+#include "ram/Constraint.h"
 
 namespace souffle::ast2ram::semprov {
 
@@ -194,11 +199,19 @@ Own<ram::Statement> UnitTranslator::generateMergeRelations(
     VecOwn<ram::Expression> values;
 
     // Predicate - project all values - Arity +1 and not +2 because semProv and not provenance
+    //Own<ram::Condition> aggCond;
     for (std::size_t i = 0; i < rel->getArity() + 1; i++) {
         values.push_back(mk<ram::TupleElement>(0, i));
+	//auto condition = mk<ram::Constraint>(BinaryConstraintOp::EQ, mk<ram::TupleElement>(1,i), mk<ram::TupleElement>(0,i));
+	//aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
     }
+    //values.push_back(mk<ram::TupleElement>(1, 0));
 
     auto projection = mk<ram::Project>(destRelation, std::move(values));
+    //auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN, srcRelation, mk<ram::TupleElement>(1, rel->getArity()),  std::move(aggCond), 1);
+    //auto emptyCheck = mk<ram::Filter>(
+		    //mk<ram::Negation>(mk<ram::EmptinessCheck>(srcRelation)), std::move(agg));
+    //auto stmt = mk<ram::Query>(mk<ram::Scan>(srcRelation, 0, std::move(emptyCheck)));
     auto stmt = mk<ram::Query>(mk<ram::Scan>(srcRelation, 0, std::move(projection)));
     if (rel->getRepresentation() == RelationRepresentation::EQREL) {
         return mk<ram::Sequence>(mk<ram::Extend>(destRelation, srcRelation), std::move(stmt));
