@@ -59,7 +59,7 @@ Own<ram::Statement> UnitTranslator::generateLoadRelation(const ast::Relation* re
 
 Own<ram::Statement> UnitTranslator::generateStoreRelation(const ast::Relation* relation) const {
 	// dummy return for now as we have implemented modification of the directives
-	// directly in the IOAttributes transofrmation pass
+	// directly in the IOAttributes transformation pass
 	return seminaive::UnitTranslator::generateStoreRelation(relation);
 }
 
@@ -216,6 +216,32 @@ Own<ram::Statement> UnitTranslator::generateMergeRelations(
     if (rel->getRepresentation() == RelationRepresentation::EQREL) {
         return mk<ram::Sequence>(mk<ram::Extend>(destRelation, srcRelation), std::move(stmt));
     }
+    return stmt;
+}
+
+Own<ram::Statement> UnitTranslator::generateCompactRelations(
+	const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const {
+    VecOwn<ram::Expression> values;
+
+    Own<ram::Condition> aggCond;
+    for (std::size_t i = 0; i < rel->getArity(); i++) {
+        values.push_back(mk<ram::TupleElement>(0,i));
+	auto condition = mk<ram::Constraint>(BinaryConstraintOp::EQ, mk<ram::TupleElement>(1,i), mk<ram::TupleElement>(0,i));
+	aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
+    }
+    values.push_back(mk<ram::TupleElement>(1, 0));
+
+    auto projection = mk<ram::Project>(destRelation, std::move(values));
+    auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN, 
+		    srcRelation, mk<ram::TupleElement>(1, rel->getArity()), std::move(aggCond), 1);
+    auto emptyCheck = mk<ram::Filter>(
+		    mk<ram::Negation>(mk<ram::EmptinessCheck>(srcRelation)), std::move(agg));
+    auto stmt = mk<ram::Query>(mk<ram::Scan>(srcRelation, 0, std::move(emptyCheck)));
+
+    if(rel->getRepresentation() == RelationRepresentation::EQREL) {
+	    return mk<ram::Sequence>(mk<ram::Extend>(destRelation, srcRelation), std::move(stmt));
+    }
+
     return stmt;
 }
 

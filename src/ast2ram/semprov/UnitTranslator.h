@@ -45,6 +45,8 @@ protected:
 
     Own<ram::Statement> generateMergeRelations(const ast::Relation* rel, const std::string& destRelation,
             const std::string& srcRelation) const override;
+    Own<ram::Statement> generateCompactRelations(const ast::Relation* rel, const std::string& destRelation,
+            const std::string& srcRelation) const;
 
     /** IO translation */
     Own<ram::Statement> generateLoadRelation(const ast::Relation* relation) const override;
