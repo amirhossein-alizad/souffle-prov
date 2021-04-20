@@ -219,7 +219,7 @@ Own<ram::Statement> UnitTranslator::generateMergeRelations(
     return stmt;
 }
 
-Own<ram::Statement> UnitTranslator::generateCompactRelations(
+/* Own<ram::Statement> UnitTranslator::generateCompactRelations(
 	const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const {
     VecOwn<ram::Expression> values;
 
@@ -243,7 +243,7 @@ Own<ram::Statement> UnitTranslator::generateCompactRelations(
     }
 
     return stmt;
-}
+} */
 
 /*
 Own<ram::Sequence> UnitTranslator::generateInfoClauses(const ast::Program* program) {

@@ -36,6 +36,7 @@ protected:
     void indexAtoms(const ast::Clause& clause) override;
     Own<ram::Operation> addAtomScan(Own<ram::Operation> op, const ast::Atom* atom, const ast::Clause& clause,
             int curLevel) const override;
+    std::string getClauseAtomName(const ast::Clause&, const ast::Atom* atom) const override;
 
 private:
     Own<ram::Expression> getSemprovValue(const ast::Clause& clause) const;

@@ -67,7 +67,7 @@ protected:
 
     std::string getClauseString(const ast::Clause& clause) const;
 
-    std::string getClauseAtomName(const ast::Clause& clause, const ast::Atom* atom) const;
+    virtual std::string getClauseAtomName(const ast::Clause& clause, const ast::Atom* atom) const;
 
     virtual Own<ram::Operation> addNegatedAtom(
             Own<ram::Operation> op, const ast::Clause& clause, const ast::Atom* atom) const;

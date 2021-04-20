@@ -642,7 +642,7 @@ int main(int argc, char** argv) {
                 mk<ReportIndexTransformer>());
 	// Using the SemProv TranslationSTrategy raise many assert errors
 	// This should be eventually fixed
-        ramTransform->apply(*ramTranslationUnit);
+        //ramTransform->apply(*ramTranslationUnit);
     }
 
     if (ramTranslationUnit->getErrorReport().getNumIssues() != 0) {

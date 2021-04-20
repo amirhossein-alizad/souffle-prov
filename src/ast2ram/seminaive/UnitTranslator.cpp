@@ -74,6 +74,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "ram/Aggregate.h"
+#include "ram/True.h"
+#include "ram/EmptinessCheck.h"
+#include "ram/Negation.h"
+#include "ram/Constraint.h"
 
 namespace souffle::ast2ram::seminaive {
 
@@ -206,6 +211,32 @@ Own<ram::Statement> UnitTranslator::generateMergeRelations(
     return stmt;
 }
 
+Own<ram::Statement> UnitTranslator::generateCompactRelations(
+        const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const {
+    VecOwn<ram::Expression> values;
+
+    Own<ram::Condition> aggCond;
+    for (std::size_t i = 0; i < rel->getArity(); i++) {
+        values.push_back(mk<ram::TupleElement>(0,i));
+	auto condition = mk<ram::Constraint>(BinaryConstraintOp::EQ, mk<ram::TupleElement>(1,i), mk<ram::TupleElement>(0,i));
+	aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
+    }
+    values.push_back(mk<ram::TupleElement>(1, 0));
+
+    auto projection = mk<ram::Project>(destRelation, std::move(values));
+    auto agg = mk<ram::Aggregate>(std::move(projection), AggregateOp::MIN,
+	 srcRelation, mk<ram::TupleElement>(1, rel->getArity()), std::move(aggCond), 1);
+    auto emptyCheck = mk<ram::Filter>(
+		    mk<ram::Negation>(mk<ram::EmptinessCheck>(srcRelation)), std::move(agg));
+    auto stmt = mk<ram::Query>(mk<ram::Scan>(srcRelation, 0, std::move(emptyCheck)));
+
+    if(rel->getRepresentation() == RelationRepresentation::EQREL) {
+	    return mk<ram::Sequence>(mk<ram::Extend>(destRelation, srcRelation), std::move(stmt));
+    }
+
+    return stmt;
+}
+
 Own<ram::Statement> UnitTranslator::translateRecursiveClauses(
         const std::set<const ast::Relation*>& scc, const ast::Relation* rel) const {
     assert(contains(scc, rel) && "relation should belong to scc");
@@ -256,9 +287,17 @@ Own<ram::Statement> UnitTranslator::generateStratumPreamble(const std::set<const
         // Generate code for the non-recursive part of the relation */
         appendStmt(preamble, generateNonRecursiveRelation(*rel));
 
+	// If semProv, add compact relation
+	std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
+	if (Global::config().has("semProv")) {
+	    std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
+	    appendStmt(preamble, generateCompactRelations(rel, mainRelation, tmpRelation));
+	    appendStmt(preamble , mk<ram::Clear>(tmpRelation));
+	}
+
         // Copy the result into the delta relation
         std::string deltaRelation = getDeltaRelationName(rel->getQualifiedName());
-        std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
+        //std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
         appendStmt(preamble, generateMergeRelations(rel, deltaRelation, mainRelation));
     }
     return mk<ram::Sequence>(std::move(preamble));
@@ -326,6 +365,13 @@ Own<ram::Statement> UnitTranslator::generateStratumExitSequence(
     };
 
     VecOwn<ram::Statement> exitConditions;
+    
+    for(const ast::Relation* rel : scc) {
+	std::string newRelation = getNewRelationName(rel->getQualifiedName());
+	std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
+        appendStmt(exitConditions, generateCompactRelations(rel, newRelation, tmpRelation));
+	appendStmt(exitConditions, mk<ram::Clear>(tmpRelation));
+    }
 
     // (1) if all relations in the scc are empty
     Own<ram::Condition> emptinessCheck;
@@ -459,9 +505,11 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
                 std::string newName = getNewRelationName(rel->getQualifiedName());
                 ramRelations.push_back(createRamRelation(rel, newName));
 
-		// Add tmp relation
-		std::string tmpName = getTmpRelationName(rel->getQualifiedName());
-		ramRelations.push_back(createRamRelation(rel, tmpName));
+		if(Global::config().has("semProv")) {
+		    // Add tmp relation
+		    std::string tmpName = getTmpRelationName(rel->getQualifiedName());
+		    ramRelations.push_back(createRamRelation(rel, tmpName));
+		}
             }
         }
     }

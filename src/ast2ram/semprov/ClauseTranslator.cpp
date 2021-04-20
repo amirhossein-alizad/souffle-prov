@@ -162,6 +162,19 @@ Own<ram::Operation> ClauseTranslator::addAtomScan(
     return op;
 }
 
+std::string ClauseTranslator::getClauseAtomName(const ast::Clause& clause, const ast::Atom* atom) const {
+    if (!isRecursive()) {
+        return getTmpRelationName(atom->getQualifiedName());
+    }
+    if (clause.getHead() == atom) {
+	return getTmpRelationName(atom->getQualifiedName());
+    }
+    if (sccAtoms.at(version) == atom) {
+        return getDeltaRelationName(atom->getQualifiedName());
+    }
+    return getConcreteRelationName(atom->getQualifiedName());
+}
+
 Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause) const {
     const auto head = clause.getHead();
     auto headRelationName = getClauseAtomName(clause, head);

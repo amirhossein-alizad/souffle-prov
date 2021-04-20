@@ -81,6 +81,8 @@ protected:
     Own<ram::Statement> generateClearRelation(const ast::Relation* relation) const;
     virtual Own<ram::Statement> generateMergeRelations(
             const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const;
+    Own<ram::Statement> generateCompactRelations(
+            const ast::Relation* rel, const std::string& destRelation, const std::string& srcRelation) const;
 
 private:
     std::map<std::string, Own<ram::Statement>> ramSubroutines;
