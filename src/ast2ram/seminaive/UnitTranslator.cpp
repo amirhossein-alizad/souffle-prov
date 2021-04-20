@@ -449,6 +449,7 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
             ramRelations.push_back(createRamRelation(rel, mainName));
 
             // Recursive relations also require @delta and @new variants, with the same signature
+	    // (semprov) also requires tmp for sanitizing multiple provenance annotation
             if (isRecursive) {
                 // Add delta relation
                 std::string deltaName = getDeltaRelationName(rel->getQualifiedName());
@@ -457,6 +458,10 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
                 // Add new relation
                 std::string newName = getNewRelationName(rel->getQualifiedName());
                 ramRelations.push_back(createRamRelation(rel, newName));
+
+		// Add tmp relation
+		std::string tmpName = getTmpRelationName(rel->getQualifiedName());
+		ramRelations.push_back(createRamRelation(rel, tmpName));
             }
         }
     }

@@ -51,6 +51,10 @@ std::string getRelationName(const ast::QualifiedName& name) {
     return toString(join(name.getQualifiers(), "."));
 }
 
+std::string getTmpRelationName(const ast::QualifiedName& name) {
+    return getConcreteRelationName(name, "@tmp_");
+}
+
 std::string getBaseRelationName(const ast::QualifiedName& name) {
     return stripPrefix("@new_", stripPrefix("@delta_", stripPrefix("@info_", name.toString())));
 }

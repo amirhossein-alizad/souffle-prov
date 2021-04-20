@@ -49,6 +49,9 @@ std::string getDeltaRelationName(const ast::QualifiedName& name);
 /** Get the corresponding RAM 'new' relation name for the relation */
 std::string getNewRelationName(const ast::QualifiedName& name);
 
+/** Get the corresponding RAM 'tmp' relation name for the relation, needed by semprov */
+std::string getTmpRelationName(const ast::QualifiedName& name);
+
 /** Get base relation name, strip off any possible prefix */
 std::string getBaseRelationName(const ast::QualifiedName& name);
 
