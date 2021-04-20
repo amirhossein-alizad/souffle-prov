@@ -56,7 +56,7 @@ std::string getTmpRelationName(const ast::QualifiedName& name) {
 }
 
 std::string getBaseRelationName(const ast::QualifiedName& name) {
-    return stripPrefix("@new_", stripPrefix("@delta_", stripPrefix("@info_", name.toString())));
+    return stripPrefix("@new_", stripPrefix("@tmp_", stripPrefix("@delta_", stripPrefix("@info_", name.toString()))));
 }
 
 void appendStmt(VecOwn<ram::Statement>& stmtList, Own<ram::Statement> stmt) {

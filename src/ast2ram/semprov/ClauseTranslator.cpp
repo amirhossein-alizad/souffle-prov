@@ -164,7 +164,10 @@ Own<ram::Operation> ClauseTranslator::addAtomScan(
 
 std::string ClauseTranslator::getClauseAtomName(const ast::Clause& clause, const ast::Atom* atom) const {
     if (!isRecursive()) {
-        return getTmpRelationName(atom->getQualifiedName());
+	if(clause.getHead() == atom) {
+            return getTmpRelationName(atom->getQualifiedName());
+	}
+	return getConcreteRelationName(atom->getQualifiedName());
     }
     if (clause.getHead() == atom) {
 	return getTmpRelationName(atom->getQualifiedName());

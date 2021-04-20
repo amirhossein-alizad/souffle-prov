@@ -366,11 +366,13 @@ Own<ram::Statement> UnitTranslator::generateStratumExitSequence(
 
     VecOwn<ram::Statement> exitConditions;
     
-    for(const ast::Relation* rel : scc) {
-	std::string newRelation = getNewRelationName(rel->getQualifiedName());
-	std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
-        appendStmt(exitConditions, generateCompactRelations(rel, newRelation, tmpRelation));
-	appendStmt(exitConditions, mk<ram::Clear>(tmpRelation));
+    if (Global::config().has("semProv")) {
+        for(const ast::Relation* rel : scc) {
+	    std::string newRelation = getNewRelationName(rel->getQualifiedName());
+	    std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
+            appendStmt(exitConditions, generateCompactRelations(rel, newRelation, tmpRelation));
+	    appendStmt(exitConditions, mk<ram::Clear>(tmpRelation));
+        }
     }
 
     // (1) if all relations in the scc are empty
