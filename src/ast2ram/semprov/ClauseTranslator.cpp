@@ -182,7 +182,7 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
     const auto head = clause.getHead();
     auto headRelationName = getClauseAtomName(clause, head);
 
-    Own<ram::Condition> aggCond;
+    //Own<ram::Condition> aggCond;
 
     VecOwn<ram::Expression> values;
     unsigned i = 0;
@@ -192,7 +192,7 @@ Own<ram::Operation> ClauseTranslator::createProjection(const ast::Clause& clause
 	auto condition = mk<ram::Constraint>(BinaryConstraintOp::EQ,
 			mk<ram::TupleElement>(operators.size(),i),
 			context.translateValue(*valueIndex, arg));
-	aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
+	//aggCond = addConjunctiveTerm(std::move(aggCond), std::move(condition));
 	i++;
     }
     
