@@ -285,14 +285,23 @@ Own<ram::Statement> UnitTranslator::generateStratumPreamble(const std::set<const
     VecOwn<ram::Statement> preamble;
     for (const ast::Relation* rel : scc) {
         // Generate code for the non-recursive part of the relation */
-        appendStmt(preamble, generateNonRecursiveRelation(*rel));
+	auto seqRel = generateNonRecursiveRelation(*rel);
+        appendStmt(preamble, std::move(seqRel));
 
 	// If semProv, add compact relation
 	std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
 	if (Global::config().has("semProv")) {
-	    std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
-	    appendStmt(preamble, generateCompactRelations(rel, mainRelation, tmpRelation));
-	    appendStmt(preamble , mk<ram::Clear>(tmpRelation));
+	    bool toAdd = false;
+	    for (const auto* clause : context->getClauses(rel->getQualifiedName())) {
+	        if (!context->isRecursiveClause(clause)) { 
+			toAdd = true; 
+		}
+	    }
+	    if(toAdd) {
+	        std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
+	        appendStmt(preamble, generateCompactRelations(rel, mainRelation, tmpRelation));
+	        appendStmt(preamble , mk<ram::Clear>(tmpRelation));
+	    }
 	}
 
         // Copy the result into the delta relation
