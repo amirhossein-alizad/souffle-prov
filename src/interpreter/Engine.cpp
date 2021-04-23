@@ -1710,7 +1710,22 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
     }
 
     // insert in target relation
-    rel.insert(tuple);
+    //rel.insert(tuple);
+
+    // SemProv: Create the AnnotatedTuple
+    AnnotatedTuple<Rel> taggedTuple(tuple[Arity-1]);
+    for(size_t i = 0; i < Arity - 1; i++) {
+        taggedTuple[i] = tuple[i];
+	std::cout << taggedTuple[i] << " ";
+    }
+    taggedTuple.rel = &rel;
+
+    std::cout << "tag: " << taggedTuple.semprovValue << " in " << taggedTuple.rel->getName() << std::endl;
+    
+    //if not a new relation insert in target relation
+    std::cout << taggedTuple.isInNewRel() << std::endl;
+    taggedTuple.rel->insert(tuple);
+
     return true;
 }
 

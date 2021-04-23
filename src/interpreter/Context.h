@@ -24,6 +24,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include "PriorityQueue.h"
 
 namespace souffle::interpreter {
 
@@ -120,6 +121,10 @@ private:
     VecOwn<RamDomain[]> allocatedDataContainer;
     /** @brief Views */
     VecOwn<ViewWrapper> views;
+
+public:
+    /** Semprov PriorityQueue */
+    //std::priority_queue<AnnotatedTuple> sp_pq;
 };
 
 }  // namespace souffle::interpreter
