@@ -8,11 +8,24 @@
 
 namespace souffle::interpreter {
 
-template<typename T> class AnnotatedTuple {
+class OrderingTuple {
+public:
+    OrderingTuple(const RamDomain prov) : semprovValue(prov) {}
+
+    RamDomain semprovValue;
+};
+
+struct OTComparator {
+    bool operator() (const OrderingTuple& lhs, const OrderingTuple& rhs) {
+        return (unsigned int) lhs.semprovValue < (unsigned int) rhs.semprovValue;
+    } 
+};
+
+template<typename T> class AnnotatedTuple : public OrderingTuple {
     using RelationHandle = Own<RelationWrapper>;
 
 public:
-    AnnotatedTuple<T>(const RamDomain prov) : semprovValue(prov) {}
+    AnnotatedTuple<T>(const RamDomain prov) : OrderingTuple(prov) {}
 
     RamDomain& operator[](std::size_t index) {
         if (index >= tuple.size()) {
@@ -26,7 +39,7 @@ public:
     }
 	
     std::vector<RamDomain> tuple;
-    RamDomain semprovValue;
+    //RamDomain semprovValue;
     T* rel;
 
     bool isInNewRel() {

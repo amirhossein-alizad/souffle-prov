@@ -24,7 +24,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include "PriorityQueue.h"
+#include "interpreter/PriorityQueue.h"
 
 namespace souffle::interpreter {
 
@@ -124,7 +124,7 @@ private:
 
 public:
     /** Semprov PriorityQueue */
-    //std::priority_queue<AnnotatedTuple> sp_pq;
+    std::priority_queue<OrderingTuple, std::vector<OrderingTuple>, OTComparator> sp_pq;
 };
 
 }  // namespace souffle::interpreter

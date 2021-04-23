@@ -1710,21 +1710,28 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
     }
 
     // insert in target relation
-    //rel.insert(tuple);
+    if(!Global::config().has("semProv")) {
+        rel.insert(tuple);
+    } else {
+        // SemProv: Create the AnnotatedTuple
+        AnnotatedTuple<Rel> taggedTuple(tuple[Arity-1]);
+        for(size_t i = 0; i < Arity - 1; i++) {
+            taggedTuple[i] = tuple[i];
+	    std::cout << taggedTuple[i] << " ";
+        }
+        taggedTuple.rel = &rel;
 
-    // SemProv: Create the AnnotatedTuple
-    AnnotatedTuple<Rel> taggedTuple(tuple[Arity-1]);
-    for(size_t i = 0; i < Arity - 1; i++) {
-        taggedTuple[i] = tuple[i];
-	std::cout << taggedTuple[i] << " ";
-    }
-    taggedTuple.rel = &rel;
-
-    std::cout << "tag: " << taggedTuple.semprovValue << " in " << taggedTuple.rel->getName() << std::endl;
+        std::cout << "tag: " << taggedTuple.semprovValue << " in " << taggedTuple.rel->getName() << std::endl;
     
-    //if not a new relation insert in target relation
-    std::cout << taggedTuple.isInNewRel() << std::endl;
-    taggedTuple.rel->insert(tuple);
+        //if not a new relation insert in target relation
+        std::cout << taggedTuple.isInNewRel() << std::endl;
+        if(!taggedTuple.isInNewRel()) {
+            taggedTuple.rel->insert(tuple);
+        } else {
+	    ctxt.sp_pq.push(taggedTuple);
+	    std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;
+        }
+    }
 
     return true;
 }
