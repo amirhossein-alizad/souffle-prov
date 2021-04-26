@@ -76,9 +76,7 @@
 #include <vector>
 #include "ram/Aggregate.h"
 #include "ram/True.h"
-#include "ram/EmptinessCheck.h"
-#include "ram/Negation.h"
-#include "ram/Constraint.h"
+#include "ram/PQEmptyCheck.h"
 
 namespace souffle::ast2ram::seminaive {
 
@@ -384,12 +382,17 @@ Own<ram::Statement> UnitTranslator::generateStratumExitSequence(
         }
     }
 
-    // (1) if all relations in the scc are empty
-    Own<ram::Condition> emptinessCheck;
-    for (const ast::Relation* rel : scc) {
-        addCondition(emptinessCheck, mk<ram::EmptinessCheck>(getNewRelationName(rel->getQualifiedName())));
+    if(Global::config().has("semProv")) {
+	// instantiate custom empty check for pq
+	appendStmt(exitConditions, mk<ram::Exit>(mk<ram::PQEmptyCheck>()));
+    } else {
+        // (1) if all relations in the scc are empty
+        Own<ram::Condition> emptinessCheck;
+        for (const ast::Relation* rel : scc) {
+            addCondition(emptinessCheck, mk<ram::EmptinessCheck>(getNewRelationName(rel->getQualifiedName())));
+        }
+        appendStmt(exitConditions, mk<ram::Exit>(std::move(emptinessCheck)));
     }
-    appendStmt(exitConditions, mk<ram::Exit>(std::move(emptinessCheck)));
 
     // (2) if the size limit has been reached for any limitsize relations
     for (const ast::Relation* rel : scc) {
