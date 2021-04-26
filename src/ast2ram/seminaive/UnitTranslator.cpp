@@ -77,6 +77,7 @@
 #include "ram/Aggregate.h"
 #include "ram/True.h"
 #include "ram/PQEmptyCheck.h"
+#include "ram/SemProvProject.h"
 
 namespace souffle::ast2ram::seminaive {
 
@@ -324,23 +325,32 @@ Own<ram::Statement> UnitTranslator::generateStratumPostamble(
 Own<ram::Statement> UnitTranslator::generateStratumTableUpdates(
         const std::set<const ast::Relation*>& scc) const {
     VecOwn<ram::Statement> updateTable;
-    for (const ast::Relation* rel : scc) {
-        // Copy @new into main relation, @delta := @new, and empty out @new
-        std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
-        std::string newRelation = getNewRelationName(rel->getQualifiedName());
-        std::string deltaRelation = getDeltaRelationName(rel->getQualifiedName());
-        Own<ram::Statement> updateRelTable =
-                mk<ram::Sequence>(generateMergeRelations(rel, mainRelation, newRelation),
-                        mk<ram::Swap>(deltaRelation, newRelation), mk<ram::Clear>(newRelation));
+    if(Global::config().has("semProv")) {
+	    for ( const ast::Relation* rel : scc) {
+		std::string deltaRelation = getDeltaRelationName(rel->getQualifiedName());
+		appendStmt(updateTable, mk<ram::Clear>(deltaRelation));
+	    }
+	    // Customs add of the best tuple seen so far in the according relation (and in the delta)
+	    appendStmt(updateTable, mk<ram::Query>(mk<ram::SemProvProject>()));
+    } else {
+        for (const ast::Relation* rel : scc) {
+            // Copy @new into main relation, @delta := @new, and empty out @new
+            std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
+            std::string newRelation = getNewRelationName(rel->getQualifiedName());
+            std::string deltaRelation = getDeltaRelationName(rel->getQualifiedName());
+            Own<ram::Statement> updateRelTable =
+                    mk<ram::Sequence>(generateMergeRelations(rel, mainRelation, newRelation),
+                            mk<ram::Swap>(deltaRelation, newRelation), mk<ram::Clear>(newRelation));
 
-        // Measure update time
-        if (Global::config().has("profile")) {
-            updateRelTable = mk<ram::LogRelationTimer>(std::move(updateRelTable),
-                    LogStatement::cRecursiveRelation(toString(rel->getQualifiedName()), rel->getSrcLoc()),
-                    newRelation);
+            // Measure update time
+            if (Global::config().has("profile")) {
+                updateRelTable = mk<ram::LogRelationTimer>(std::move(updateRelTable),
+                        LogStatement::cRecursiveRelation(toString(rel->getQualifiedName()), rel->getSrcLoc()),
+                        newRelation);
+            }
+
+            appendStmt(updateTable, std::move(updateRelTable));
         }
-
-        appendStmt(updateTable, std::move(updateRelTable));
     }
     return mk<ram::Sequence>(std::move(updateTable));
 }
