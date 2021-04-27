@@ -103,7 +103,9 @@ struct RelationWrapper;
     Forward(Query)\
     Forward(Extend)\
     Forward(Swap)\
-    Forward(Call)
+    Forward(Call)\
+    Forward(PQEmptyCheck)\
+    Forward(SemProvProject)
 
 #define SINGLE_TOKEN(tok) I_##tok,
 
@@ -886,6 +888,20 @@ class Swap : public Node, public BinRelOperation {
 public:
     Swap(enum NodeType ty, const ram::Node* sdw, std::size_t src, std::size_t target)
             : Node(ty, sdw), BinRelOperation(src, target) {}
+};
+
+/**
+ * @class PQEmptyCheck - semprov
+ */
+class PQEmptyCheck : public Node {
+    using Node::Node;
+};
+
+/**
+ * @class SemProvProject - semprov
+ */
+class SemProvProject : public Node {
+    using Node::Node;
 };
 
 }  // namespace interpreter
