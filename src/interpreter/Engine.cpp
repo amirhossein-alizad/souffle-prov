@@ -404,8 +404,6 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
         high[expr.first] = execute(expr.second.get(), ctxt);            \
     }
 
-    DEBUG(node->getType())
-
     switch (node->getType()) {
         CASE(NumericConstant)
             return cur.getConstant();
@@ -1253,6 +1251,8 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
 
 	CASE(SemProvProject)
 	    std::cout << "in SemProvProject" << std::endl;
+	    auto& best_tuple = ctxt.sp_pq.top();
+	    std::cout << "best tuple is to be added in " << best_tuple.getName() << std::endl;
 	    return true; // Does nothing for now
 	ESAC(SemProvProject)
     }

@@ -13,6 +13,10 @@ public:
     OrderingTuple(const RamDomain prov) : semprovValue(prov) {}
 
     RamDomain semprovValue;
+
+    //virtual void insert();
+
+    virtual const std::string& getName() const {};
 };
 
 struct OTComparator {
@@ -42,8 +46,16 @@ public:
     //RamDomain semprovValue;
     T* rel;
 
+    //void insert() override {
+    //    rel->insert(&tuple[0]);	    
+    //}
+
     bool isInNewRel() {
         return isPrefix("@new_", rel->getName());
+    }
+
+    const std::string& getName() const override {
+        return rel->getName();
     }
     
     /*bool operator< (const AnnotatedTuple &right) {
