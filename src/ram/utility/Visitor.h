@@ -96,6 +96,8 @@
 #include <type_traits>
 #include <typeinfo>
 #include <vector>
+#include "ram/PQEmptyCheck.h"
+#include "ram/SemProvProject.h"
 
 namespace souffle::ram {
 /**
@@ -126,6 +128,10 @@ struct Visitor : public souffle::Visitor<R, NodeType, Params...> {
         SOUFFLE_VISITOR_FORWARD(SubroutineArgument);
         SOUFFLE_VISITOR_FORWARD(UndefValue);
         SOUFFLE_VISITOR_FORWARD(RelationSize);
+
+	// semprov
+	SOUFFLE_VISITOR_FORWARD(PQEmptyCheck);
+	SOUFFLE_VISITOR_FORWARD(SemProvProject);
 
         // Conditions
         SOUFFLE_VISITOR_FORWARD(True);
@@ -263,6 +269,10 @@ protected:
     SOUFFLE_VISITOR_LINK(PackRecord, Expression);
     SOUFFLE_VISITOR_LINK(SubroutineArgument, Expression);
     SOUFFLE_VISITOR_LINK(RelationSize, Expression);
+
+    // semprov
+    SOUFFLE_VISITOR_LINK(PQEmptyCheck, Node);
+    SOUFFLE_VISITOR_LINK(SemProvProject, Node);
 
     SOUFFLE_VISITOR_LINK(Expression, Node);
 

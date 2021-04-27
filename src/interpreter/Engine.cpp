@@ -112,6 +112,8 @@
 #include <vector>
 #include <dlfcn.h>
 #include <ffi.h>
+#include "ram/PQEmptyCheck.h"
+#include "ram/SemProvProject.h"
 
 namespace souffle::interpreter {
 
@@ -401,6 +403,8 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
     for (const auto& expr : superInfo.exprSecond) {                     \
         high[expr.first] = execute(expr.second.get(), ctxt);            \
     }
+
+    DEBUG(node->getType())
 
     switch (node->getType()) {
         CASE(NumericConstant)
@@ -1241,6 +1245,16 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
             swapRelation(shadow.getSourceId(), shadow.getTargetId());
             return true;
         ESAC(Swap)
+
+	CASE(PQEmptyCheck)
+	    std::cout << "in PQEmptyCheck" << std::endl;
+	    return ctxt.sp_pq.empty();
+	ESAC(PQEmptyCheck)
+
+	CASE(SemProvProject)
+	    std::cout << "in SemProvProject" << std::endl;
+	    return true; // Does nothing for now
+	ESAC(SemProvProject)
     }
 
     UNREACHABLE_BAD_CASE_ANALYSIS

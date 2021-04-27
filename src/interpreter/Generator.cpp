@@ -493,6 +493,14 @@ NodePtr NodeGenerator::visit_(type_identity<ram::UndefValue>, const ram::UndefVa
     return nullptr;
 }
 
+NodePtr NodeGenerator::visit_(type_identity<ram::PQEmptyCheck>, const ram::PQEmptyCheck& pqEmptyCheck) {
+    return mk<PQEmptyCheck>(I_PQEmptyCheck, &pqEmptyCheck);
+}
+
+NodePtr NodeGenerator::visit_(type_identity<ram::SemProvProject>, const ram::SemProvProject& semProvProject) {
+    return mk<SemProvProject>(I_SemProvProject, &semProvProject);
+}
+
 NodePtr NodeGenerator::visit_(type_identity<ram::Node>, const ram::Node& node) {
     fatal("unsupported node type: %s", typeid(node).name());
 }

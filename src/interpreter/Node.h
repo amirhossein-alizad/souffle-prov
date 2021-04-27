@@ -894,14 +894,18 @@ public:
  * @class PQEmptyCheck - semprov
  */
 class PQEmptyCheck : public Node {
-    using Node::Node;
+public:
+    PQEmptyCheck(enum NodeType ty, const ram::Node* sdw)
+	    : Node(ty, sdw) {}
 };
 
 /**
  * @class SemProvProject - semprov
  */
 class SemProvProject : public Node {
-    using Node::Node;
+public:
+    SemProvProject(enum NodeType ty, const ram::Node* sdw)
+	    : Node(ty, sdw) {}
 };
 
 }  // namespace interpreter

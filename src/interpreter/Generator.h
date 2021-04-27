@@ -102,6 +102,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "ram/PQEmptyCheck.h"
+#include "ram/SemProvProject.h"
 
 namespace souffle::interpreter {
 class Engine;
@@ -233,6 +235,10 @@ public:
     NodePtr visit_(type_identity<ram::Swap>, const ram::Swap& swap) override;
 
     NodePtr visit_(type_identity<ram::UndefValue>, const ram::UndefValue&) override;
+
+    NodePtr visit_(type_identity<ram::PQEmptyCheck>, const ram::PQEmptyCheck&) override;
+
+    NodePtr visit_(type_identity<ram::SemProvProject>, const ram::SemProvProject&) override;
 
     NodePtr visit_(type_identity<ram::Node>, const ram::Node& node) override;
 
