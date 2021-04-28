@@ -22,10 +22,10 @@ protected:
         os << "ADD best_tuple IN best_tuple.relation() and delta_relation"<< std::endl;
     } 
 
-    bool equal(const Node& node) const override {
-	const auto& other = asAssert<SemProvProject>(node);
-        return true;
-    }
+    //bool equal(const Node& node) const override {
+	//const auto& other = asAssert<SemProvProject>(node);
+        //return true;
+    //}
 };
 
 } // namespace souffle::ram

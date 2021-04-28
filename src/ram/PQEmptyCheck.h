@@ -24,10 +24,10 @@ protected:
         os << "(priority_queue is empty?)";
     }
 
-    bool equal(const Node& node) const override {
-        const auto& other = asAssert<PQEmptyCheck>(node);
-	return true;
-    }
+    //bool equal(const Node& node) const override {
+        //const auto& other = asAssert<PQEmptyCheck>(node);
+	//return true;
+    //}
 };
 
 } // namespace souffle::ram
