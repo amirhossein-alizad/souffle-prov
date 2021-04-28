@@ -16,12 +16,15 @@ public:
 
     //virtual void insert();
 
-    virtual const std::string& getName() const {};
+    virtual const std::string& getName() const = 0; // { 
+	    //std::cout << "In virtual getName()" << std::endl;
+	    //return "OrderingTupleVirtual getName()"; 
+    //};
 };
 
 struct OTComparator {
-    bool operator() (const OrderingTuple& lhs, const OrderingTuple& rhs) {
-        return (unsigned int) lhs.semprovValue < (unsigned int) rhs.semprovValue;
+    bool operator() (const Own<OrderingTuple>& lhs, const Own<OrderingTuple>& rhs) {
+        return (unsigned int) lhs->semprovValue < (unsigned int) rhs->semprovValue;
     } 
 };
 
@@ -55,6 +58,8 @@ public:
     }
 
     const std::string& getName() const override {
+	std::cout << "In getName()" << std::endl;
+	std::cout << rel->getName() << std::endl;
         return rel->getName();
     }
     

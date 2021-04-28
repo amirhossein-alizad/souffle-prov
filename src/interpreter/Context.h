@@ -124,7 +124,7 @@ private:
 
 public:
     /** Semprov PriorityQueue */
-    std::priority_queue<OrderingTuple, std::vector<OrderingTuple>, OTComparator> sp_pq;
+    std::priority_queue<Own<OrderingTuple>, std::vector<Own<OrderingTuple> >, OTComparator> sp_pq;
 };
 
 }  // namespace souffle::interpreter

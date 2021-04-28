@@ -1251,8 +1251,12 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
 
 	CASE(SemProvProject)
 	    std::cout << "in SemProvProject" << std::endl;
-	    auto& best_tuple = ctxt.sp_pq.top();
-	    std::cout << "best tuple is to be added in " << best_tuple.getName() << std::endl;
+	    
+	    // const_cast is needed, pop has to occur right after
+	    Own<OrderingTuple> best_tuple = std::move(const_cast<Own<OrderingTuple>& >(ctxt.sp_pq.top()));
+            ctxt.sp_pq.pop();
+
+	    std::cout << "best tuple is to be added in " << best_tuple->getName() << std::endl;
 	    return true; // Does nothing for now
 	ESAC(SemProvProject)
     }
@@ -1728,21 +1732,21 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
         rel.insert(tuple);
     } else {
         // SemProv: Create the AnnotatedTuple
-        AnnotatedTuple<Rel> taggedTuple(tuple[Arity-1]);
+        Own<AnnotatedTuple<Rel> > taggedTuple = mk<AnnotatedTuple<Rel> >(tuple[Arity -1]);
         for(size_t i = 0; i < Arity - 1; i++) {
-            taggedTuple[i] = tuple[i];
-	    std::cout << taggedTuple[i] << " ";
+            (*taggedTuple)[i] = tuple[i];
+	    std::cout << (*taggedTuple)[i] << " ";
         }
-        taggedTuple.rel = &rel;
+        taggedTuple->rel = &rel;
 
-        std::cout << "tag: " << taggedTuple.semprovValue << " in " << taggedTuple.rel->getName() << std::endl;
+        std::cout << "tag: " << taggedTuple->semprovValue << " in " << taggedTuple->getName() << std::endl;
     
         //if not a new relation insert in target relation
-        std::cout << taggedTuple.isInNewRel() << std::endl;
-        if(!taggedTuple.isInNewRel()) {
-            taggedTuple.rel->insert(tuple);
+        std::cout << taggedTuple->isInNewRel() << std::endl;
+        if(!taggedTuple->isInNewRel()) {
+            taggedTuple->rel->insert(tuple);
         } else {
-	    ctxt.sp_pq.push(taggedTuple);
+	    ctxt.sp_pq.push(std::move(taggedTuple));
 	    std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;
         }
     }
