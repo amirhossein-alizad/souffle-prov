@@ -1257,6 +1257,7 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
             ctxt.sp_pq.pop();
 
 	    std::cout << "best tuple is to be added in " << best_tuple->getName() << std::endl;
+	    best_tuple->customInsert();
 	    return true; // Does nothing for now
 	ESAC(SemProvProject)
     }

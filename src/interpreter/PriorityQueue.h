@@ -5,6 +5,7 @@
 #include <queue>
 #include <vector>
 #include "souffle/utility/StringUtil.h"
+#include "ast2ram/utility/Utils.h"
 
 namespace souffle::interpreter {
 
@@ -20,6 +21,8 @@ public:
 	    //std::cout << "In virtual getName()" << std::endl;
 	    //return "OrderingTupleVirtual getName()"; 
     //};
+
+    virtual bool customInsert() = 0;
 };
 
 struct OTComparator {
@@ -55,6 +58,16 @@ public:
 
     bool isInNewRel() {
         return isPrefix("@new_", rel->getName());
+    
+    }
+
+    bool customInsert() {
+        // create the new full tuple
+	tuple.push_back(semprovValue);
+	this->rel->insert(&this->tuple[0]);
+        // TODO insert in delta relation
+	//std::cout << souffle::ast2ram::getDeltaRelationName(rel->getName()) << std::endl;
+	return true;
     }
 
     const std::string& getName() const override {
