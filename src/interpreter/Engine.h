@@ -38,6 +38,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <unordered_map>
 
 namespace souffle::interpreter {
 
@@ -184,6 +185,10 @@ private:
     VecOwn<RelationHandle> relations;
     /** Symbol table */
     SymbolTable symbolTable;
+
+    // semProv, copy of relTable (in Generator)
+public:
+    std::unordered_map<std::string, std::size_t> relTable;
 };
 
 }  // namespace souffle::interpreter

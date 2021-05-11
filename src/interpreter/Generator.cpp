@@ -553,12 +553,12 @@ std::size_t NodeGenerator::getArity(const std::string& relName) {
 }
 
 std::size_t NodeGenerator::encodeRelation(const std::string& relName) {
-    auto pos = relTable.find(relName);
-    if (pos != relTable.end()) {
+    auto pos = engine.relTable.find(relName);
+    if (pos != engine.relTable.end()) {
         return pos->second;
     }
     std::size_t id = getNewRelId();
-    relTable[relName] = id;
+    engine.relTable[relName] = id;
     engine.createRelation(lookup(relName), id);
     return id;
 }

@@ -114,6 +114,8 @@
 #include <ffi.h>
 #include "ram/PQEmptyCheck.h"
 #include "ram/SemProvProject.h"
+#include "souffle/utility/StringUtil.h"
+#include "ast2ram/utility/Utils.h"
 
 namespace souffle::interpreter {
 
@@ -1256,9 +1258,19 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
 	    Own<OrderingTuple> best_tuple = std::move(const_cast<Own<OrderingTuple>& >(ctxt.sp_pq.top()));
             ctxt.sp_pq.pop();
 
-	    std::cout << "best tuple is to be added in " << best_tuple->getName() << std::endl;
+	    std::cout << "best tuple is to be added in " << best_tuple->getName() << " with id=" << relTable[best_tuple->getName()]  << std::endl;
 	    best_tuple->customInsert();
-	    return true; // Does nothing for now
+	    //std::string relationName = stripPrefix("@new_", best_tuple->getName());
+	    //size_t idRel = relTable[relationName];
+	    //std::string deltaRelationName = "@delta_" + relationName;
+	    //size_t idDelta = relTable[deltaRelationName];
+	    //std::cout << "relName: " << relationName << " with id =" << idRel << std::endl;
+	    //std::cout << "delta: " << deltaRelationName << " with id=" << idDelta << std::endl;
+	    //best_tuple->rel = relations[idRel];
+	    //best_tuple->rel->insert(best_tuple->format());
+	    //best_tuple->rel = relations[idDelta];
+	    //best_tuple->rel->insert(best_tuple->format());
+	    return true;
 	ESAC(SemProvProject)
     }
 
@@ -1747,6 +1759,19 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
         if(!taggedTuple->isInNewRel()) {
             taggedTuple->rel->insert(tuple);
         } else {
+            std::string relationName = stripPrefix("@new_", taggedTuple->getName());
+	    std::string deltaRelationName = "@delta_" + relationName;
+
+	    size_t idRel = relTable[relationName];
+	    size_t idDelta = relTable[deltaRelationName];
+
+	    std::cout << "relName: " << relationName << " with id: " << idRel << std::endl;
+	    std::cout << "deltaName: " << deltaRelationName << "with id: " << idDelta << std::endl;
+
+	    // TODO récupérer les relation Handle de la relation et de sa delta relation
+	    //taggedTuple->rel = static_cast<Rel&>( (*getRelationHandle(idRel)) );
+	    //taggedTuple->relDelta = static_cast<Rel&>( (*getRelationHandle(idDelta)) );
+
 	    ctxt.sp_pq.push(std::move(taggedTuple));
 	    std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;
         }

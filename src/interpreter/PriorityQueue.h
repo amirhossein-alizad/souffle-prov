@@ -51,6 +51,7 @@ public:
     std::vector<RamDomain> tuple;
     //RamDomain semprovValue;
     T* rel;
+    T* relDelta;
 
     //void insert() override {
     //    rel->insert(&tuple[0]);	    
@@ -64,15 +65,19 @@ public:
     bool customInsert() {
         // create the new full tuple
 	tuple.push_back(semprovValue);
-	this->rel->insert(&this->tuple[0]);
-        // TODO insert in delta relation
-	//std::cout << souffle::ast2ram::getDeltaRelationName(rel->getName()) << std::endl;
+	//this->rel->insert(&this->tuple[0]);
+	//this->relDelta->insert(&this->tuple[0]);
+	
+        // insert in delta relation
+	  //std::string relationName = stripPrefix("@new_", rel->getName());
+	  //std::string deltaRelationName = "@delta_" + relationName;
+	  //std::cout << "getName(): " << rel->getName() << " relName: " << relationName << " delta: " << deltaRelationName << std::endl;
 	return true;
     }
 
     const std::string& getName() const override {
-	std::cout << "In getName()" << std::endl;
-	std::cout << rel->getName() << std::endl;
+	//std::cout << "In getName()" << std::endl;
+	//std::cout << rel->getName() << std::endl;
         return rel->getName();
     }
     
