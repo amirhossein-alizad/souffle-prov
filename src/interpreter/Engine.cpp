@@ -1768,9 +1768,9 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
 	    std::cout << "relName: " << relationName << " with id: " << idRel << std::endl;
 	    std::cout << "deltaName: " << deltaRelationName << "with id: " << idDelta << std::endl;
 
-	    // TODO récupérer les relation Handle de la relation et de sa delta relation
-	    //taggedTuple->rel = static_cast<Rel&>( (*getRelationHandle(idRel)) );
-	    //taggedTuple->relDelta = static_cast<Rel&>( (*getRelationHandle(idDelta)) );
+	    // retrieve pointers to handlers
+	    taggedTuple->rel = static_cast<Rel*>(getRelationHandle(idRel).get());
+	    taggedTuple->relDelta = static_cast<Rel*>(getRelationHandle(idDelta).get());
 
 	    ctxt.sp_pq.push(std::move(taggedTuple));
 	    std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;

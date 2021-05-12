@@ -65,8 +65,9 @@ public:
     bool customInsert() {
         // create the new full tuple
 	tuple.push_back(semprovValue);
-	//this->rel->insert(&this->tuple[0]);
-	//this->relDelta->insert(&this->tuple[0]);
+	// insert the tuple in the relation and the delta of the relation
+	this->rel->insert(&this->tuple[0]);
+	this->relDelta->insert(&this->tuple[0]);
 	
         // insert in delta relation
 	  //std::string relationName = stripPrefix("@new_", rel->getName());
