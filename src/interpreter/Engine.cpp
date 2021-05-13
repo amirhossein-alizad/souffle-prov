@@ -1247,18 +1247,18 @@ RamDomain Engine::execute(const Node* node, Context& ctxt) {
         ESAC(Swap)
 
 	CASE(PQEmptyCheck)
-	    std::cout << "in PQEmptyCheck" << std::endl;
+	    //std::cout << "in PQEmptyCheck" << std::endl;
 	    return ctxt.sp_pq.empty();
 	ESAC(PQEmptyCheck)
 
 	CASE(SemProvProject)
-	    std::cout << "in SemProvProject" << std::endl;
+	    //std::cout << "in SemProvProject" << std::endl;
 	    
 	    // const_cast is needed, pop has to occur right after
 	    Own<OrderingTuple> best_tuple = std::move(const_cast<Own<OrderingTuple>& >(ctxt.sp_pq.top()));
             ctxt.sp_pq.pop();
 
-	    std::cout << "best tuple is to be added in " << best_tuple->getName() << " with id=" << relTable[best_tuple->getName()]  << std::endl;
+	    //std::cout << "best tuple is to be added in " << best_tuple->getName() << " with id=" << relTable[best_tuple->getName()]  << std::endl;
 	    best_tuple->customInsert();
 	    //std::string relationName = stripPrefix("@new_", best_tuple->getName());
 	    //size_t idRel = relTable[relationName];
@@ -1748,14 +1748,14 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
         Own<AnnotatedTuple<Rel> > taggedTuple = mk<AnnotatedTuple<Rel> >(tuple[Arity -1]);
         for(size_t i = 0; i < Arity - 1; i++) {
             (*taggedTuple)[i] = tuple[i];
-	    std::cout << (*taggedTuple)[i] << " ";
+	    //std::cout << (*taggedTuple)[i] << " ";
         }
         taggedTuple->rel = &rel;
 
-        std::cout << "tag: " << taggedTuple->semprovValue << " in " << taggedTuple->getName() << std::endl;
+        //std::cout << "tag: " << taggedTuple->semprovValue << " in " << taggedTuple->getName() << std::endl;
     
         //if not a new relation insert in target relation
-        std::cout << taggedTuple->isInNewRel() << std::endl;
+        //std::cout << taggedTuple->isInNewRel() << std::endl;
         if(!taggedTuple->isInNewRel()) {
             taggedTuple->rel->insert(tuple);
         } else {
@@ -1765,15 +1765,15 @@ RamDomain Engine::evalProject(Rel& rel, const Project& shadow, Context& ctxt) {
 	    size_t idRel = relTable[relationName];
 	    size_t idDelta = relTable[deltaRelationName];
 
-	    std::cout << "relName: " << relationName << " with id: " << idRel << std::endl;
-	    std::cout << "deltaName: " << deltaRelationName << "with id: " << idDelta << std::endl;
+	    //std::cout << "relName: " << relationName << " with id: " << idRel << std::endl;
+	    //std::cout << "deltaName: " << deltaRelationName << "with id: " << idDelta << std::endl;
 
 	    // retrieve pointers to handlers
 	    taggedTuple->rel = static_cast<Rel*>(getRelationHandle(idRel).get());
 	    taggedTuple->relDelta = static_cast<Rel*>(getRelationHandle(idDelta).get());
 
 	    ctxt.sp_pq.push(std::move(taggedTuple));
-	    std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;
+	    //std::cout << "sp_pq.size(): " << ctxt.sp_pq.size() << std::endl;
         }
     }
 

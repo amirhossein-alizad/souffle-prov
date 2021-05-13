@@ -459,7 +459,7 @@ int main(int argc, char** argv) {
     astTranslationUnit->getErrorReport().exitIfErrors();
     
     /// semProv temporary
-    Global::config().print(std::cout);
+    //Global::config().print(std::cout);
     //std::cout << "---- start semProv temporary: std::cout << astTranslationUnit->getProgram() << std::endl;" << std::endl;
     //std::cout << astTranslationUnit->getProgram() << std::endl;
     //std::cout << "---- end SemProv temporary" << std::endl;
