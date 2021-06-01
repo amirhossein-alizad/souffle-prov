@@ -758,11 +758,13 @@ int main(int argc, char** argv) {
     }
 
     /* Report overall run-time in verbose mode */
-    if (Global::config().has("verbose")) {
+    //if (Global::config().has("verbose")) {
         auto souffle_end = std::chrono::high_resolution_clock::now();
-        std::cout << "Total Time: " << std::chrono::duration<double>(souffle_end - souffle_start).count()
-                  << "sec\n";
-    }
+        std::cout //<< "Total Time: " 
+		<< std::chrono::duration<double>(souffle_end - souffle_start).count()
+		<< std::endl;
+                  //<< "sec\n";
+    //}
 
     return 0;
 }
