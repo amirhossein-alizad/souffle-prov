@@ -123,9 +123,17 @@ Own<ram::Statement> UnitTranslator::generateNonRecursiveRelation(const ast::Rela
         ds << toString(*clause) << "\nin file ";
         ds << clause->getSrcLoc();
         rule = mk<ram::DebugInfo>(std::move(rule), ds.str());
-
+        
         // Add rule to result
         appendStmt(result, std::move(rule));
+    }
+
+    //semprov always add compact representation
+    std::string mainRelation = getConcreteRelationName(rel.getQualifiedName());
+    if(Global::config().has("semProv")) {
+	std::string tmpRelation = getTmpRelationName(rel.getQualifiedName());
+	appendStmt(result, generateCompactRelations(&rel, mainRelation, tmpRelation));
+	appendStmt(result, mk<ram::Clear>(tmpRelation));
     }
 
     // Add logging for entire relation
@@ -283,18 +291,20 @@ VecOwn<ram::Statement> UnitTranslator::generateClauseVersions(
 Own<ram::Statement> UnitTranslator::generateStratumPreamble(const std::set<const ast::Relation*>& scc) const {
     VecOwn<ram::Statement> preamble;
     for (const ast::Relation* rel : scc) {
-        // Generate code for the non-recursive part of the relation */
+        // Generate code for the non-recursive part of the relation
 	auto seqRel = generateNonRecursiveRelation(*rel);
         appendStmt(preamble, std::move(seqRel));
 
-	// If semProv, add compact relation
 	std::string mainRelation = getConcreteRelationName(rel->getQualifiedName());
+	// now we always compact relations in generateNonRecursiveRelation to handle IDB non-recursive relations 
+	/*
 	if (Global::config().has("semProv")) {
+	    //test always true
 	    bool toAdd = false;
 	    for (const auto* clause : context->getClauses(rel->getQualifiedName())) {
 	        if (!context->isRecursiveClause(clause)) { 
-			toAdd = true; 
-		}
+	    		toAdd = true; 
+	    	}
 	    }
 	    if(toAdd) {
 	        std::string tmpRelation = getTmpRelationName(rel->getQualifiedName());
@@ -302,6 +312,7 @@ Own<ram::Statement> UnitTranslator::generateStratumPreamble(const std::set<const
 	        appendStmt(preamble , mk<ram::Clear>(tmpRelation));
 	    }
 	}
+	*/
 
         // Copy the result into the delta relation
         std::string deltaRelation = getDeltaRelationName(rel->getQualifiedName());
@@ -519,7 +530,6 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
             ramRelations.push_back(createRamRelation(rel, mainName));
 
             // Recursive relations also require @delta and @new variants, with the same signature
-	    // (semprov) also requires tmp for sanitizing multiple provenance annotation
             if (isRecursive) {
                 // Add delta relation
                 std::string deltaName = getDeltaRelationName(rel->getQualifiedName());
@@ -528,13 +538,14 @@ VecOwn<ram::Relation> UnitTranslator::createRamRelations(const std::vector<std::
                 // Add new relation
                 std::string newName = getNewRelationName(rel->getQualifiedName());
                 ramRelations.push_back(createRamRelation(rel, newName));
-
-		if(Global::config().has("semProv")) {
-		    // Add tmp relation
-		    std::string tmpName = getTmpRelationName(rel->getQualifiedName());
-		    ramRelations.push_back(createRamRelation(rel, tmpName));
-		}
             }
+	    // (semprov) also requires tmp for sanitizing multiple provenance annotations, 
+	    // either for recursive and non-recursive operations
+	    if(Global::config().has("semProv")) {
+	        // Add tmp relation
+		std::string tmpName = getTmpRelationName(rel->getQualifiedName());
+		ramRelations.push_back(createRamRelation(rel, tmpName));
+	    }
         }
     }
     return ramRelations;
