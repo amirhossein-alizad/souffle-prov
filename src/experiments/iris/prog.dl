@@ -1,0 +1,19 @@
+.decl entry(s:number)
+.input entry
+
+.decl rela(s:number, t:number, u:number, v:number, w:number, x:number)
+.decl relb(s:number, t:number, u:number, v:number, w:number, x:number)
+.decl rel(s:number, t:number, u:number, v:number, w:number)
+
+.decl sortie(s:number)
+.output sortie
+
+rela(a, b, c, d, e, 1) :- entry(a), entry(b), entry(c), entry(d), entry(e).
+relb(a, b, c, d, e, 2) :- entry(a), entry(b), entry(c), entry(d), entry(e).
+rel(a, b, c, d, e) :- rela(a, b, c, d, e, 1), relb(a, b, c, d, e, 2).
+
+sortie(a) :- rel(a, _, _, _, _).
+sortie(b) :- rel(_, b, _, _, _).
+sortie(c) :- rel(_, _, c, _, _).
+sortie(d) :- rel(_, _, _, d, _).
+sortie(e) :- rel(_, _, _, _, e).

@@ -1,0 +1,17 @@
+.decl hasChild(n:symbol, m:symbol)
+.input hasChild
+.decl isMarriedTo(n:symbol, m:symbol)
+.input isMarriedTo
+
+.decl hc(n:symbol, m:symbol)
+.output hc
+.decl imt(n:symbol, m:symbol)
+.output imt
+
+hc(x, y) :- hasChild(x, y).
+imt(x, y) :- isMarriedTo(x, y).
+
+hc(x, y) :- imt(z, x), imt(z, y).
+hc(x, y) :- imt(x, z), imt(z, y).
+imt(x, y) :- imt(y, x).
+imt(x, y) :- hc(x, z), hc(y, z).
