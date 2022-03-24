@@ -1,4 +1,4 @@
-# Welcome!
+# Welcome to SOufflé-Prov!
 
 This fork adds semiring-based provenance capabilities to the [Soufflé](https://souffle-lang.github.io) language project.
 Currently, only 0-closed totally ordered semirings (aka. Dijkstra's semirings) are covered, but one could also extend to distributive lattices.
